@@ -42,11 +42,19 @@ func (d DisplayBuffer) Size() (x, y int16) {
 	return Width, Height
 }
 
-func (d DisplayBuffer) SetPixel(p bool, x, y int16, c uint8) {
+func (d DisplayBuffer) SetPixel(p bool, x, y int, c uint8) {
 	if p {
 		d.page1[y][x].Set(c)
 	} else {
 		d.page0[y][x].Set(c)
+	}
+}
+
+func (d DisplayBuffer) GetPixel(p bool, x, y int) uint8 {
+	if p {
+		return d.page1[y][x].Get()
+	} else {
+		return d.page0[y][x].Get()
 	}
 }
 

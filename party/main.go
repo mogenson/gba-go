@@ -25,8 +25,8 @@ func main() {
 
 	for {
 		// fill page with current palette index
-		for y := int16(0); y < Mode4.Height; y++ {
-			for x := int16(0); x < Mode4.Width; x++ {
+		for y := 0; y < Mode4.Height; y++ {
+			for x := 0; x < Mode4.Width; x++ {
 				display.SetPixel(page, x, y, color)
 			}
 		}

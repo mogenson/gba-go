@@ -13,7 +13,7 @@ type Universe struct {
 }
 
 func (u *Universe) Populate() {
-	for i := 0; i < (u.width * u.height / 8); i++ {
+	for i := 0; i < (u.width * u.height / 4); i++ {
 		u.display.SetPixel(u.page, rand.Intn(u.width), rand.Intn(u.height), 1)
 	}
 }

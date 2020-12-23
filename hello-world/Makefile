@@ -1,3 +1,3 @@
 include ../Makefile
 
-NAME = game-of-life
+NAME = hello-world

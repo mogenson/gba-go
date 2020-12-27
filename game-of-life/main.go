@@ -23,7 +23,7 @@ func (u *Universe) Alive(x, y int) bool {
 	x %= u.width
 	y += u.height
 	y %= u.height
-	return u.display.GetPixel(!u.page, x, y) != 0
+	return u.display.GetPixel(u.page, x, y) != 0
 }
 
 func (u *Universe) Next(x, y int) bool {
@@ -51,14 +51,14 @@ func (u *Universe) Step() {
 			} else {
 				color = 0 // black
 			}
-			u.display.SetPixel(u.page, x, y, color) // set non-active page
+			u.display.SetPixel(!u.page, x, y, color) // set non-active page
 		}
 	}
 }
 
 func (u *Universe) Show() {
-	u.display.DisplayPage(u.page)
 	u.page = !u.page // swap active page
+	u.display.DisplayPage(u.page)
 }
 
 func main() {
@@ -66,7 +66,7 @@ func main() {
 		display: Mode4.Display,
 		width:   Mode4.Width,
 		height:  Mode4.Height,
-		page:    true}
+		page:    false}
 
 	universe.display.Configure()
 
@@ -74,7 +74,6 @@ func main() {
 	Mode4.Palette.SetColor(1, color.RGBA{0, 255, 0, 255})
 
 	universe.Populate()
-	universe.Show()
 
 	for {
 		universe.Step()

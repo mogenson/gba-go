@@ -1,20 +1,26 @@
 package main
 
 import (
-	"gba/mode4"
+	"gba/mode5"
+	"gba/registers"
 	"image/color"
 	"math/rand"
 )
 
+var green = color.RGBA{G: 0x1f}
+var blue = color.RGBA{B: 0x1f}
+var red = color.RGBA{R: 0x1f}
+var black = color.RGBA{}
+
 type Universe struct {
-	display       Mode4.DisplayBuffer
+	display       *Mode5.DisplayBuffer
 	width, height int
 	page          bool
 }
 
 func (u *Universe) Populate() {
 	for i := 0; i < (u.width * u.height / 4); i++ {
-		u.display.SetPixel(u.page, rand.Intn(u.width), rand.Intn(u.height), 1)
+		u.display.SetPixel(u.page, rand.Intn(u.width), rand.Intn(u.height), green)
 	}
 }
 
@@ -23,7 +29,7 @@ func (u *Universe) Alive(x, y int) bool {
 	x %= u.width
 	y += u.height
 	y %= u.height
-	return u.display.GetPixel(u.page, x, y) != 0
+	return u.display.GetPixel(u.page, x, y) != black
 }
 
 func (u *Universe) Next(x, y int) bool {
@@ -45,13 +51,16 @@ func (u *Universe) Next(x, y int) bool {
 func (u *Universe) Step() {
 	for x := 0; x < u.width; x++ {
 		for y := 0; y < u.height; y++ {
-			var color uint8
-			if u.Next(x, y) { // get state from active page
-				color = 1 // green
+			// get state from active page and set non-active page
+			if u.Next(x, y) {
+				if u.page {
+					u.display.SetPixel(!u.page, x, y, red)
+				} else {
+					u.display.SetPixel(!u.page, x, y, blue)
+				}
 			} else {
-				color = 0 // black
+				u.display.SetPixel(!u.page, x, y, black)
 			}
-			u.display.SetPixel(!u.page, x, y, color) // set non-active page
 		}
 	}
 }
@@ -63,16 +72,16 @@ func (u *Universe) Show() {
 
 func main() {
 	universe := Universe{
-		display: Mode4.Display,
-		width:   Mode4.Width,
-		height:  Mode4.Height,
+		display: &Mode5.Display,
+		width:   120,
+		height:  80,
 		page:    false}
 
+	scale := uint16(1 << 7)
+	Registers.BG2PA.Set(scale)
+	Registers.BG2PD.Set(scale)
+
 	universe.display.Configure()
-
-	// palette index 0 is black and 1 is green
-	Mode4.Palette.SetColor(1, color.RGBA{0, 255, 0, 255})
-
 	universe.Populate()
 
 	for {

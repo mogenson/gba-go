@@ -10,7 +10,7 @@ run:
 	$(GO) run -target=$(TARGET) $(SRCS)
 
 debug:
-	$(GO) gdb -target=$(TARGET) $(SRCS)
+	$(GO) gdb -target=$(TARGET) -opt=1 $(SRCS)
 
 clean:
 	$(GO) clean
